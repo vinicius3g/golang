@@ -20,3 +20,10 @@ type SpotDto struct {
 	Reserved bool   `json:"reserved"`
 	TicketID string `json:"ticket_id"`
 }
+
+type TicketDto struct {
+	ID         string  `json:"id"`
+	SpotID     string  `json:"spot_id"`
+	TicketKind string  `json:"ticket_kind"`
+	Price      float64 `json:"price"`
+}
