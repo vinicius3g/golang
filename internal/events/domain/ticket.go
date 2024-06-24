@@ -2,6 +2,8 @@ package domain
 
 import (
 	"errors"
+
+	"github.com/google/uuid"
 )
 
 // Errors
@@ -29,6 +31,27 @@ type Ticket struct {
 	Spot       *Spot
 	TicketKind TicketKind
 	Price      float64
+}
+
+func NewTicket(event *Event, spot *Spot, ticketKind TicketKind) (*Ticket, error) {
+	if !IsValidTicketKind(ticketKind) {
+		return nil, ErrInvalidTicketKind
+	}
+
+	ticket := &Ticket{
+		ID:         uuid.New().String(),
+		EventID:    event.ID,
+		Spot:       spot,
+		TicketKind: ticketKind,
+		Price:      event.Price,
+	}
+
+	ticket.CalculatePrice()
+	if err := ticket.Validate(); err != nil {
+		return nil, err
+	}
+
+	return ticket, nil
 }
 
 // CalculatePrice calculates the price based on the ticket kind.
