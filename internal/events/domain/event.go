@@ -3,15 +3,20 @@ package domain
 import (
 	"errors"
 	"time"
+
+	"github.com/google/uuid"
 )
 
+// Erros
 var (
 	ErrEventNameRequired = errors.New("event name is required")
 	ErrEventDateFuture   = errors.New("event date must be in the future")
 	ErrEventCapacityZero = errors.New("event capacity must be greater than zero")
 	ErrEventPriceZero    = errors.New("event price must be greater than zero")
+	ErrEventNotFound     = errors.New("event not found")
 )
 
+// Rating represents the age restriction for an event.
 type Rating string
 
 const (
@@ -23,6 +28,7 @@ const (
 	Rating18    Rating = "18"
 )
 
+// Event represents an event with tickets and spots.
 type Event struct {
 	ID           string
 	Name         string
@@ -38,6 +44,28 @@ type Event struct {
 	Tickets      []Ticket
 }
 
+// NewEvent creates a new event with the given parameters.
+func NewEvent(name, location, organization string, rating Rating, date time.Time, capacity int, price float64, imageUrl string, partnerID int) (*Event, error) {
+	event := &Event{
+		ID:           uuid.New().String(),
+		Name:         name,
+		Location:     location,
+		Organization: organization,
+		Rating:       rating,
+		Date:         date,
+		Capacity:     capacity,
+		Price:        price,
+		ImageURL:     imageUrl,
+		PartnerID:    partnerID,
+		Spots:        make([]Spot, 0),
+	}
+	if err := event.Validate(); err != nil {
+		return nil, err
+	}
+	return event, nil
+}
+
+// Validate checks if the event data is valid.
 func (e Event) Validate() error {
 	if e.Name == "" {
 		return ErrEventNameRequired
@@ -58,6 +86,7 @@ func (e Event) Validate() error {
 	return nil
 }
 
+// AddSpot adds a spot to the event.
 func (e *Event) AddSpot(name string) (*Spot, error) {
 	spot, err := NewSpot(e, name)
 
