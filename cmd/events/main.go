@@ -18,7 +18,7 @@ import (
 
 func main() {
 	// Configuração do banco de dados
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/db")
+	db, err := sql.Open("mysql", "test_user:test_password@tcp(golang-mysql:3306)/test_db")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -32,8 +32,8 @@ func main() {
 	}
 	// URLs base específicas para cada parceiro
 	partnerBaseURLs := map[int]string{
-		1: "https://partner1.com",
-		2: "https://partner2.com",
+		1: "http://host.docker.internal:8000/partner1",
+		2: "http://host.docker.internal:8000/partner2",
 	}
 
 	partnerFactory := service.NewPartnerFactory(partnerBaseURLs)
